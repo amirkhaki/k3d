@@ -2,5 +2,10 @@ cmake_minimum_required(VERSION 3.25)
 project(k3d)
 
 set(CMAKE_CXX_STANDARD 20)
-
+find_package(glfw3 3.3 REQUIRED)
+include(FindVulkan)
 add_executable(k3d main.cpp)
+target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} Vulkan::Headers)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
