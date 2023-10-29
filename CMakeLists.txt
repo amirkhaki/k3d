@@ -34,7 +34,9 @@ add_executable(k3d main.cpp
         k3d/Pipeline.h
         k3d/device.h
         k3d/device.cpp
-        k3d/SwapChain.cpp)
+        k3d/SwapChain.cpp
+        k3d/Model.cpp
+        k3d/Model.h)
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} Vulkan::Headers)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})

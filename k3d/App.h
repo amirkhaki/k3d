@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "Pipeline.h"
 #include "SwapChain.h"
+#include "Model.h"
 #include <memory>
 
 namespace k3d {
@@ -28,18 +29,17 @@ namespace k3d {
 
         std::vector<vk::UniqueCommandBuffer> createCommandBuffers();
 
+        std::unique_ptr<Model> loadModels();
+
         void drawFrame();
 
         Window window{WIDTH, HEIGHT, "first app"};
         Device device{window};
         SwapChain swapchain{device, window.getExtent()};
-//        Pipeline pipeline{device,
-//                          "shaders/triangle.vert.spv",
-//                          "shaders/triangle.frag.spv",
-//                          Pipeline::defaultConfig(WIDTH, HEIGHT)};
         std::unique_ptr<Pipeline> pipeline;
         vk::UniquePipelineLayout pipelineLayout;
         std::vector<vk::UniqueCommandBuffer> commandBuffers;
+        std::unique_ptr<Model> model;
     };
 
 } // k3d

@@ -93,7 +93,7 @@ namespace k3d {
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
-            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT * ) & debugCreateInfo;
+            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *) &debugCreateInfo;
         } else {
             createInfo.enabledLayerCount = 0;
             createInfo.pNext = nullptr;
@@ -382,7 +382,7 @@ namespace k3d {
             vk::DeviceSize size,
             vk::BufferUsageFlags usage,
             vk::MemoryPropertyFlags propertyFlags,
-            vk::Buffer &buffer,
+            vk::UniqueBuffer &buffer,
             vk::UniqueDeviceMemory &bufferMemory) {
         vk::BufferCreateInfo bufferInfo{};
         bufferInfo.size = size;
@@ -390,12 +390,12 @@ namespace k3d {
         bufferInfo.sharingMode = vk::SharingMode::eExclusive;
 
         try {
-            buffer = device_->createBuffer(bufferInfo);
+            buffer = device_->createBufferUnique(bufferInfo);
         } catch (const std::exception &e) {
             throw std::runtime_error("failed to create vertex buffer!");
         }
 
-        vk::MemoryRequirements memRequirements = device_->getBufferMemoryRequirements(buffer);
+        vk::MemoryRequirements memRequirements = device_->getBufferMemoryRequirements(buffer.get());
 
         vk::MemoryAllocateInfo allocInfo{};
         allocInfo.allocationSize = memRequirements.size;
@@ -408,7 +408,7 @@ namespace k3d {
             throw std::runtime_error("failed to allocate vertex buffer memory!");
         }
 
-        device_->bindBufferMemory(buffer, bufferMemory.get(), 0);
+        device_->bindBufferMemory(buffer.get(), bufferMemory.get(), 0);
     }
 
 

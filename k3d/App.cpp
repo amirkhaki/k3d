@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "App.h"
+#include <ranges>
 
 namespace k3d {
     void App::run() {
@@ -39,6 +40,7 @@ namespace k3d {
     }
 
     App::App() {
+        model = loadModels();
         pipelineLayout = createPipelineLayout();
         pipeline = createPipeline();
         commandBuffers = createCommandBuffers();
@@ -49,7 +51,6 @@ namespace k3d {
         vk::resultCheck(swapchain.acquireNextImage(imageIndex), "failed to acquire next image");
         vk::resultCheck(swapchain.submitCommandBuffers(&commandBuffers[imageIndex].get(), imageIndex),
                         "failed to submit command buffer");
-
     }
 
     std::vector<vk::UniqueCommandBuffer> App::createCommandBuffers() {
@@ -73,7 +74,7 @@ namespace k3d {
             } catch (const std::exception &) {
                 throw std::runtime_error("failed to begin recording command buffer");
             }
-            vk::ArrayWrapper1D<float, 4> colors({0.9, 0.9, 0.9, 0.9});
+            vk::ArrayWrapper1D<float, 4> colors({0.0, 0.0, 0.0, 1.0});
             std::array<vk::ClearValue, 2> clearValues{};
             clearValues[0].color = vk::ClearColorValue{
                     .float32 = colors //vk::ArrayWrapper1D<float, 4>({0.1, 0.1, 0.1f, 1.0f})
@@ -88,7 +89,8 @@ namespace k3d {
             };
             cmd->beginRenderPass(renderPassBeginInfo, vk::SubpassContents::eInline);
             pipeline->bind(cmd.get());
-            cmd->draw(3, 1, 0, 0);
+            model->bind(cmd.get());
+            model->draw(cmd.get());
             cmd->endRenderPass();
             try {
                 cmd->end();
@@ -98,4 +100,52 @@ namespace k3d {
         }
         return commandBuffersV;
     }
+
+    namespace {
+        struct triangle {
+            glm::vec2 v1, v2, v3;
+        };
+
+        glm::vec2 operator/(glm::vec2 v, int n) {
+            return {v.x / n, v.y / n};;
+        }
+
+        static void algorithm(triangle t, std::vector<triangle> &tv, int depth, int n = 0) {
+            if (n >= depth) {
+                tv.push_back(t);
+                return;
+            }
+            auto m12 = (t.v1 + t.v2) / 2;
+            auto m13 = (t.v1 + t.v3) / 2;
+            auto m23 = (t.v2 + t.v3) / 2;
+            ++n;
+            algorithm({t.v1, m12, m13}, tv, depth, n);
+            algorithm({t.v2, m12, m23}, tv, depth, n);
+            algorithm({t.v3, m23, m13}, tv, depth, n);
+        }
+
+        std::vector<Model::Vertex> sierpinski(glm::vec2 v1, glm::vec2 v2, glm::vec2 v3, int depth) {
+            std::vector<triangle> triangles;
+            std::vector<Model::Vertex> r;
+            algorithm({v1, v2, v3}, triangles, depth, 0);
+            for (auto &i: std::views::reverse(triangles)) {
+                r.push_back({i.v1});
+                r.push_back({i.v2});
+                r.push_back({i.v3});
+            }
+            return r;
+        }
+
+    }
+
+    std::unique_ptr<Model> App::loadModels() {
+        std::vector<Model::Vertex> vertices = sierpinski(
+                {1, 0.9},
+                {0.0f, -1.0f},
+                {-1.0f, 0.9f},
+                10
+        );
+        return std::make_unique<Model>(device, vertices);
+    }
+
 } // k3d

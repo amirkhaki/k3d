@@ -70,7 +70,7 @@ namespace k3d {
                 vk::DeviceSize size,
                 vk::BufferUsageFlags usage,
                 vk::MemoryPropertyFlags propertyFlags,
-                vk::Buffer &buffer,
+                vk::UniqueBuffer &buffer,
                 vk::UniqueDeviceMemory &bufferMemory);
 
         vk::CommandBuffer beginSingleTimeCommands();

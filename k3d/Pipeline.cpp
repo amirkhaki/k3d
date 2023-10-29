@@ -3,6 +3,7 @@
 //
 
 #include "Pipeline.h"
+#include "Model.h"
 
 #include <fstream>
 #include <iostream>
@@ -46,9 +47,14 @@ namespace k3d {
                         .pName = "main",
                 }
         };
+
+        auto vertexBindingDescriptions = Model::Vertex::getBindingDescriptions();
+        auto vertexAttributeDescriptions = Model::Vertex::getAttributeDescriptions();
         vk::PipelineVertexInputStateCreateInfo vertexInputStateCreateInfo{
-                .vertexBindingDescriptionCount = 0,
-                .vertexAttributeDescriptionCount = 0,
+                .vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptions.size()),
+                .pVertexBindingDescriptions = vertexBindingDescriptions.data(),
+                .vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptions.size()),
+                .pVertexAttributeDescriptions = vertexAttributeDescriptions.data(),
         };
         vk::PipelineViewportStateCreateInfo viewportInfo{
                 .viewportCount = 1,
