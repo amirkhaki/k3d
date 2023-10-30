@@ -29,14 +29,24 @@ namespace k3d {
 
         void createWindowSurface(vk::Instance instance, vk::SurfaceKHR &pKhr);
 
-        [[nodiscard]] vk::Extent2D getExtent() const { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+        [[nodiscard]] vk::Extent2D getExtent() const {
+            return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        }
+        [[nodiscard]] bool wasWindowResized() const {
+            return framebufferResized;
+        }
+        void resetWindowResizedFlag() {
+            framebufferResized = false;
+        }
 
     private:
         void initWindow();
+        static void framebufferResizedCallback(GLFWwindow* window, int width, int height);
 
         std::string windowName;
         int height;
         int width;
+        bool framebufferResized = false;
         GLFWwindow *window;
     };
 

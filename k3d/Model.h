@@ -18,6 +18,7 @@ namespace k3d {
     public:
         struct Vertex {
             glm::vec2 position;
+            glm::vec3 color;
 
             static std::vector<vk::VertexInputBindingDescription> getBindingDescriptions();
 

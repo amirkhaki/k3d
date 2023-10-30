@@ -148,8 +148,8 @@ namespace k3d {
 
         try {
             swapChain = device.device().createSwapchainKHRUnique(createInfo);
-        } catch (const std::exception &) {
-            throw std::runtime_error("failed to create swap chain!");
+        } catch (const std::exception &e) {
+            throw std::runtime_error(std::string("failed to create swap chain!") + e.what());
         }
 
         // we only specified a minimum number of images in the swap chain, so the implementation is
@@ -342,7 +342,7 @@ namespace k3d {
     vk::SurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(
             const std::vector<vk::SurfaceFormatKHR> &availableFormats) {
         for (const auto &availableFormat: availableFormats) {
-            if (availableFormat.format == vk::Format::eB8G8R8Unorm &&
+            if (availableFormat.format == vk::Format::eR8G8B8A8Srgb &&
                 availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
                 return availableFormat;
             }

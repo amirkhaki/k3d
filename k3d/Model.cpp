@@ -50,8 +50,15 @@ namespace k3d {
                         .location = 0,
                         .binding = 0,
                         .format = vk::Format::eR32G32Sfloat,
-                        .offset = 0,
+                        .offset = offsetof(Model::Vertex, position),
                 },
+                {
+                        .location = 1,
+                        .binding = 0,
+                        .format = vk::Format::eR32G32B32Sfloat,
+                        .offset = offsetof(Model::Vertex, color),
+
+                }
         };
     }
 } // k3d

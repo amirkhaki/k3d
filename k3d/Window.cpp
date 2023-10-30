@@ -7,6 +7,7 @@
 #include "Window.h"
 
 #include <utility>
+#include <iostream>
 
 namespace k3d {
     Window::Window(int w, int h, std::string name) : width(w), height(h), windowName(std::move(name)), window(nullptr) {
@@ -16,8 +17,10 @@ namespace k3d {
     void Window::initWindow() {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizedCallback);
     }
 
     Window::~Window() {
@@ -35,5 +38,12 @@ namespace k3d {
             throw std::runtime_error("failed to create window surface!");
         }
         pKhr = rawSurface;
+    }
+
+    void Window::framebufferResizedCallback(GLFWwindow *window, int width, int height) {
+        auto windowClass = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+        windowClass->width = width;
+        windowClass->height = height;
+        windowClass->framebufferResized = true;
     }
 } // k3d

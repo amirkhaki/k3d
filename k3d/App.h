@@ -33,13 +33,19 @@ namespace k3d {
 
         void drawFrame();
 
+        void recordCommandBuffer(vk::CommandBuffer cmd, uint32_t imageIndex);
+
         Window window{WIDTH, HEIGHT, "first app"};
         Device device{window};
-        SwapChain swapchain{device, window.getExtent()};
+        std::unique_ptr<SwapChain> swapchain;
         std::unique_ptr<Pipeline> pipeline;
         vk::UniquePipelineLayout pipelineLayout;
         std::vector<vk::UniqueCommandBuffer> commandBuffers;
         std::unique_ptr<Model> model;
+
+        std::unique_ptr<SwapChain> createSwapChain();
+
+        void recreateSwapChain();
     };
 
 } // k3d
